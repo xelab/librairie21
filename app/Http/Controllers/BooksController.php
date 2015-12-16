@@ -52,9 +52,9 @@ class BooksController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		//$this->validate($request, ['name' => 'required']); // Uncomment and modify if you need to validate any input.
+		$this->validate($request, ['title' => 'required']);
 		Book::create($request->all());
-		return redirect('books');
+		return redirect('book');
 	}
 
 	/**
