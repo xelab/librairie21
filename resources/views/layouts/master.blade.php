@@ -8,6 +8,8 @@
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ asset('css/magnificPopup/magnific-popup.css') }}" rel="stylesheet">
         <link href="{{ asset('css/dataTables.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/librairie.css') }}" rel="stylesheet">
     </head>
     <body>
         <div class="container-fluid">
@@ -28,6 +30,7 @@
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('js/magnificPopup/jquery.magnific-popup.min.js') }}"></script>
         <script src="{{ asset('js/dataTables/dataTables.min.js') }}"></script>
+        <script src="{{ asset('js/select2/select2.full.min.js') }}"></script>
         @stack('scripts')
     </body>
 </html>

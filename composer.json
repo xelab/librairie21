@@ -6,13 +6,16 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
+        "laravel/framework": "5.2.*",
         "appzcoder/crud-generator": "^1.0",
         "barryvdh/laravel-ide-helper": "^2.1",
         "doctrine/dbal": "^2.5",
-        "yajra/laravel-datatables-oracle": "~5.0"
+        "yajra/laravel-datatables-oracle": "~6.0",
+        "laravelcollective/html": "5.2.*"
     },
     "require-dev": {
+        "symfony/dom-crawler": "~3.0",
+        "symfony/css-selector": "~3.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",

@@ -21,4 +21,43 @@ class Book extends Model
      */
     protected $fillable = ['isbn','collection_id','publisher_id','price','released','title','summary','deposit','buy','distributor_id'];
 
+    /**
+     * Publisher
+     */
+    public function publisher()
+    {
+        return $this->belongsTo('App\Publisher');
+    }
+
+    /**
+     * Distributor
+     */
+    public function distributor()
+    {
+        return $this->belongsTo('App\Distributor');
+    }
+
+    /**
+     * Collection
+     */
+    public function collection()
+    {
+        return $this->belongsTo('App\Collection');
+    }
+
+    /**
+     * Author
+     */
+    public function authors()
+    {
+        return $this->belongsToMany('App\Author');
+    }
+
+    /**
+     * Tags
+     */
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag');
+    }
 }

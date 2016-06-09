@@ -6,6 +6,8 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Book;
+use App\Distributor;
+use App\Publisher;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -21,8 +23,9 @@ class BooksController extends Controller
 	 */
 	public function index()
 	{
-		$books = Book::latest()->get();
-		return view('books.index', compact('books'));
+		$distributors = ['' => ''] + Distributor::lists('name', 'id')->all();
+		$publishers = ['' => ''] + Publisher::lists('name', 'id')->all();
+		return view('books.index', compact('distributors', 'publishers'));
 	}
 
 	/**

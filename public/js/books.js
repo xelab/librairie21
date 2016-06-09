@@ -1,5 +1,10 @@
 $(document).ready(function() {
-    $('.pop-publisher-form').magnificPopup({
+
+    $('#publisher_id').select2();
+    $('#distributor_id').select2();
+    $('#authors').select2();
+
+    $('.open-popup-link').magnificPopup({
         type: 'inline',
         preloader: false,
         focus: '#publisherName',
