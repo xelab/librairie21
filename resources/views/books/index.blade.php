@@ -2,7 +2,7 @@
 
 @section('content')
     <hr>
-
+    <input type="hidden" id="url-scraping" value="{{ route('books.scraping') }}">
     {!! Form::open(['url' => 'book', 'class' => 'form-horizontal', 'id' => 'newBook']) !!}
         <div class="col-md-6">
             <div class="form-group">

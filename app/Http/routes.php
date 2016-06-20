@@ -11,9 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::group(['middleware' => 'web'], function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
 
-Route::resource('book', 'BooksController');
-Route::get('/books-data', ['as' => 'datatables.data', 'uses' => 'BooksController@anyData']);
+    Route::resource('book', 'BooksController');
+    Route::get('/books-data', ['as' => 'datatables.data', 'uses' => 'BooksController@anyData']);
+    Route::post('/books-scraping', ['as' => 'books.scraping', 'uses' => 'BooksController@scraping']);
+});

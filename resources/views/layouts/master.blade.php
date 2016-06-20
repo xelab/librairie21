@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="<?= csrf_token() ?>">
         <title>Librairie</title>
         <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ asset('css/magnificPopup/magnific-popup.css') }}" rel="stylesheet">
@@ -31,6 +32,13 @@
         <script src="{{ asset('js/magnificPopup/jquery.magnific-popup.min.js') }}"></script>
         <script src="{{ asset('js/dataTables/dataTables.min.js') }}"></script>
         <script src="{{ asset('js/select2/select2.full.min.js') }}"></script>
+        <script type="text/javascript">
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        </script>
         @stack('scripts')
     </body>
 </html>

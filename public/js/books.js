@@ -22,3 +22,21 @@ $(document).ready(function() {
         }
     });
 });
+
+$('#isbn').on('input', function(){
+    if($(this).val().length == 13)
+    {
+        $.ajax(
+        {
+            method: 'POST',
+            url: $('#url-scraping').val(),
+            data: { isbn: $('#isbn').val()}
+        })
+        .done(function(response){
+            console.log(response);
+        })
+        .fail(function( jqXHR, textStatus ) {
+            alert( "Request failed: " + textStatus );
+        });
+    }
+});

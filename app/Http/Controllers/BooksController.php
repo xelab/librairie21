@@ -110,4 +110,8 @@ class BooksController extends Controller
 		return redirect('books');
 	}
 
+	public function scraping(Request $request)
+	{
+		return 'ok';
+	}
 }
