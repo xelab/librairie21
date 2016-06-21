@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use App\Author;
+use App\Collection;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Session;
 
-class AuthorsController extends Controller
+class CollectionsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,9 +19,9 @@ class AuthorsController extends Controller
      */
     public function index()
     {
-        $authors = Author::paginate(15);
+        $collections = Collection::paginate(15);
 
-        return view('authors.index', compact('authors'));
+        return view('collections.index', compact('collections'));
     }
 
     /**
@@ -31,7 +31,7 @@ class AuthorsController extends Controller
      */
     public function create()
     {
-        return view('authors.create');
+        return view('collections.create');
     }
 
     /**
@@ -42,16 +42,14 @@ class AuthorsController extends Controller
     public function store(Request $request)
     {
         
-        $author = Author::create($request->all());
+        $collection = Collection::create($request->all());
 
-        Session::flash('flash_message', 'Author added!');
-
+        Session::flash('flash_message', 'Collection added!');
         if($request->wantsJson())
         {
-            return response()->json($author);
+            return response()->json($collection);
         }
-
-        return redirect('authors');
+        return redirect('collections');
     }
 
     /**
@@ -63,9 +61,9 @@ class AuthorsController extends Controller
      */
     public function show($id)
     {
-        $author = Author::findOrFail($id);
+        $collection = Collection::findOrFail($id);
 
-        return view('authors.show', compact('author'));
+        return view('collections.show', compact('collection'));
     }
 
     /**
@@ -77,9 +75,9 @@ class AuthorsController extends Controller
      */
     public function edit($id)
     {
-        $author = Author::findOrFail($id);
+        $collection = Collection::findOrFail($id);
 
-        return view('authors.edit', compact('author'));
+        return view('collections.edit', compact('collection'));
     }
 
     /**
@@ -92,12 +90,12 @@ class AuthorsController extends Controller
     public function update($id, Request $request)
     {
         
-        $author = Author::findOrFail($id);
-        $author->update($request->all());
+        $collection = Collection::findOrFail($id);
+        $collection->update($request->all());
 
-        Session::flash('flash_message', 'Author updated!');
+        Session::flash('flash_message', 'Collection updated!');
 
-        return redirect('authors');
+        return redirect('collections');
     }
 
     /**
@@ -109,10 +107,10 @@ class AuthorsController extends Controller
      */
     public function destroy($id)
     {
-        Author::destroy($id);
+        Collection::destroy($id);
 
-        Session::flash('flash_message', 'Author deleted!');
+        Session::flash('flash_message', 'Collection deleted!');
 
-        return redirect('authors');
+        return redirect('collections');
     }
 }

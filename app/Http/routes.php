@@ -17,6 +17,10 @@ Route::group(['middleware' => 'web'], function () {
     });
 
     Route::resource('book', 'BooksController');
+    Route::resource('collection', 'CollectionsController');
+    Route::resource('distributor', 'DistributorsController');
+    Route::resource('publisher', 'PublishersController');
     Route::get('/books-data', ['as' => 'datatables.data', 'uses' => 'BooksController@anyData']);
     Route::post('/books-scraping', ['as' => 'books.scraping', 'uses' => 'BooksController@scraping']);
+    Route::get('/publisher-collections/{publisher?}', ['as' => 'publisher.collections', 'uses' => 'PublishersController@getCollections']);
 });

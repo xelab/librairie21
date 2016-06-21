@@ -42,10 +42,13 @@ class PublishersController extends Controller
     public function store(Request $request)
     {
         
-        Publisher::create($request->all());
+        $publisher = Publisher::create($request->all());
 
         Session::flash('flash_message', 'Publisher added!');
-
+        if($request->wantsJson())
+        {
+            return response()->json($publisher);
+        }
         return redirect('publishers');
     }
 
@@ -109,5 +112,10 @@ class PublishersController extends Controller
         Session::flash('flash_message', 'Publisher deleted!');
 
         return redirect('publishers');
+    }
+
+    public function getCollections($id)
+    {
+        return response()->json(Publisher::find($id)->collections()->get());
     }
 }
