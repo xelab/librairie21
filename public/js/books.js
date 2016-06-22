@@ -57,7 +57,7 @@ function addAndHideDistributorForm(data)
 function addAndHideAuthorForm(data)
 {
     $('#authors')
-        .append($('<option>', { value : data.id, selected: true }).text(data.firstname + ' ' + data.lastname)); 
+        .append($('<option>', { value : data.id, selected: true }).text(data.name)); 
     $.magnificPopup.close();
 }
 

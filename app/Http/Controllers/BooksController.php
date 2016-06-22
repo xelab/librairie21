@@ -28,11 +28,7 @@ class BooksController extends Controller
 	{
 		$distributors = ['' => ''] + Distributor::pluck('name')->all();
 		$publishers = ['' => ''] + Publisher::pluck('name')->all();
-		$authorsRaw = Author::get()->all();
-		$authors = array();
-		foreach ($authorsRaw as $author) {
-			$authors[$author->id] = $author->fullName();
-		}
+		$authors = Author::pluck('name')->all();
 		return view('books.index', compact('distributors', 'publishers', 'authors'));
 	}
 
@@ -122,9 +118,48 @@ class BooksController extends Controller
 	{
 		$client = new Client();
 		Log::info('test', ['request' => $request->input('isbn')]);
-		$crawler = $client->request('GET', 'http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&MOTS='. $request->input('isbn') .'&x=0&y=0');
-		Log::info('test', ['status' => $client->getResponse()->getContent()]);
-		$meta = $crawler->filter('.metabook')->first();
-		return response()->json($meta);
+		$crawler = $client->request('GET', 'http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS='. $request->input('isbn') .'&x=0&y=0');
+		$count = $crawler->filter('.listeliv_metabook')->count();
+		$book;
+		if($count > 0)
+		{
+			$book = new Book;
+			if(count($element = $crawler->filter('.listeliv_metabook > .titre_commentaire > .titre a')->first()) > 0){
+				$book->title = $element->text();
+			}
+			if(count($element = $crawler->filter('.listeliv_metabook > .auteurs > a')->first()) > 0)
+			{
+				$authors = array_map('trim', explode(' ', $element->text()));
+			}
+			if(count($element = $crawler->filter('.listeliv_metabook > .editeur')->first()) > 0)
+			{
+				$editeurDate = explode('-', $element->text());
+				$nom = trim($editeurDate[0]);
+				$date = trim($editeurDate[1]);
+				$editeur = Publisher::where(['name' => $nom])->first();
+				if ($editeur != null)
+				{
+					$book->publisher_id = $editeur->id;
+				}
+				else
+				{
+					$book->publisher_id = Publisher::create(['name' => $nom])->id;
+				}
+			}
+			if(count($element = $crawler->filter('.listeliv_metabook > .prix > .prix_indicatif')->first()) > 0)
+			{
+				preg_match('/((?:[0-9]+,)*[0-9]+(?:\.[0-9]+)?)/', $element->text(), $matches);
+				Log::info('matches', $matches);
+				if(count($matches) >0)
+				{
+					$book->price = $matches[0];
+				}
+			}
+			if(count($element = $crawler->filter('.listeliv_metabook > .genre')->first()) > 0)
+			{
+				$tags = explode($element->text(), ' ');
+			}
+		}
+		return response()->json(['book' => $book]);
 	}
 }
