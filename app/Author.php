@@ -19,7 +19,7 @@ class Author extends Model
      *
      * @var array
      */
-    protected $fillable = ['lastname','firstname','birthdate','deathdate'];
+    protected $fillable = ['name','birthdate','deathdate'];
 
     /**
      * Author books
@@ -29,8 +29,4 @@ class Author extends Model
         return $this->belongsToMany('App\Book');
     }
 
-    public function fullName()
-    {
-        return $this->firstname . ' ' . $this->lastname;
-    }
 }
