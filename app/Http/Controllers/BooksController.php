@@ -8,9 +8,12 @@ use App\Http\Controllers\Controller;
 use App\Book;
 use App\Distributor;
 use App\Publisher;
+use App\Author;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use Log;
+use Goutte\Client;
 use Datatables;
 
 class BooksController extends Controller
@@ -23,9 +26,14 @@ class BooksController extends Controller
 	 */
 	public function index()
 	{
-		$distributors = ['' => ''] + Distributor::lists('name', 'id')->all();
-		$publishers = ['' => ''] + Publisher::lists('name', 'id')->all();
-		return view('books.index', compact('distributors', 'publishers'));
+		$distributors = ['' => ''] + Distributor::pluck('name')->all();
+		$publishers = ['' => ''] + Publisher::pluck('name')->all();
+		$authorsRaw = Author::get()->all();
+		$authors = array();
+		foreach ($authorsRaw as $author) {
+			$authors[$author->id] = $author->fullName();
+		}
+		return view('books.index', compact('distributors', 'publishers', 'authors'));
 	}
 
 	/**
@@ -112,6 +120,11 @@ class BooksController extends Controller
 
 	public function scraping(Request $request)
 	{
-		return 'ok';
+		$client = new Client();
+		Log::info('test', ['request' => $request->input('isbn')]);
+		$crawler = $client->request('GET', 'http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&MOTS='. $request->input('isbn') .'&x=0&y=0');
+		Log::info('test', ['status' => $client->getResponse()->getContent()]);
+		$meta = $crawler->filter('.metabook')->first();
+		return response()->json($meta);
 	}
 }

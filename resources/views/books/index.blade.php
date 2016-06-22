@@ -17,7 +17,7 @@
                 <div class="col-sm-9">
                     <div class="input-group">
                         {!! Form::select('publisher_id', $publishers, null, ['class' => 'form-control']) !!}
-                        <span class="input-group-addon new-publisher"><a href="#pop-publisher-form" class="open-popup-link">+</a></span>
+                        <a class="input-group-addon new-publisher open-popup-link" href="#pop-publisher-form">+</a>
                     </div>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                 <div class="col-sm-9">
                     <div class="input-group">
                         {!! Form::select('collection_id', [], null, ['class' => 'form-control']) !!}
-                        <span class="input-group-addon new-collection"><a href="#pop-collection-form" class="open-popup-link">+</a></span>
+                        <a class="input-group-addon new-collection open-popup-link" href="#pop-collection-form">+</a>
                     </div>
                 </div>
             </div>
@@ -34,8 +34,8 @@
                 {!! Form::label('authors', 'Auteurs: ', ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
                     <div class="input-group">
-                        {!! Form::select('authors', [], null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
-                        <span class="input-group-addon new-author">+</span>
+                        {!! Form::select('authors', $authors, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                        <a class="input-group-addon new-author open-popup-link" href="#pop-author-form">+</a>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                 <div class="col-sm-9">
                     <div class="input-group">
                         {!! Form::select('distributor_id', $distributors, null, ['class' => 'form-control']) !!}
-                        <span class="input-group-addon new-distributor"><a href="#pop-distributor-form" class="open-popup-link">+</a></span>
+                        <a class="input-group-addon new-distributor open-popup-link" href="#pop-distributor-form">+</a>
                     </div>
                 </div>
             </div>
@@ -225,6 +225,35 @@
                     </div>
                 {!! Form::close() !!}
             </div>
+        </div>
+    </div>
+
+    <div id="pop-author-form" class="white-popup mfp-hide">
+        <div class="panel panel-default">
+            <div class="panel-heading">Nouvel auteur</div>
+            <div class="panel-body">
+                {!! Form::open(['url' => 'author', 'class' => 'form-horizontal', 'id' => 'newAuthor']) !!}
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            {!! Form::label('lastname', 'Nom: ', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('lastname', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('firstname', 'Prénom: ', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('firstname', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-3">
+                                {!! Form::submit('Créer', ['class' => 'btn btn-primary form-control']) !!}
+                            </div>    
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </div>
             
         </div>
     </div>
@@ -260,6 +289,7 @@
             $('#newPublisher').ajaxForm({success: addAndHidePublisherForm, dataType: 'json', resetForm: true});
             $('#newCollection').ajaxForm({success: addAndHideCollectionForm, dataType: 'json', resetForm: true});
             $('#newDistributor').ajaxForm({success: addAndHideDistributorForm, dataType: 'json', resetForm: true});
+            $('#newAuthor').ajaxForm({success: addAndHideAuthorForm, dataType: 'json', resetForm: true});
         });
     </script>
 @endpush

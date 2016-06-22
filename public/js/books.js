@@ -54,6 +54,13 @@ function addAndHideDistributorForm(data)
     $.magnificPopup.close();
 }
 
+function addAndHideAuthorForm(data)
+{
+    $('#authors')
+        .append($('<option>', { value : data.id, selected: true }).text(data.firstname + ' ' + data.lastname)); 
+    $.magnificPopup.close();
+}
+
 $('#publisher_id').on('change', function(){
     $('#collection_publisher').val($('#publisher_id').val());
     $('.collection').show();

@@ -28,4 +28,9 @@ class Author extends Model
     {
         return $this->belongsToMany('App\Book');
     }
+
+    public function fullName()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 }
