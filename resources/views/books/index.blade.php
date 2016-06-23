@@ -42,7 +42,7 @@
             <div class="form-group">
                 {!! Form::label('price', 'Prix: ', ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
-                    {!! Form::number('price', null, ['class' => 'form-control']) !!}
+                    {!! Form::number('price', null, ['class' => 'form-control', 'step' => 'any', 'min' => '0']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -86,7 +86,15 @@
                     {!! Form::textarea('summary', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
-            
+            <div class="form-group">
+                {!! Form::label('tags', 'Tags: ', ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        {!! Form::select('tags', $tags, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                        <a class="input-group-addon new-tag open-popup-link" href="#pop-tag-form">+</a>
+                    </div>
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-3">
@@ -175,6 +183,31 @@
         </div>
     </div>
 
+    <div id="pop-tag-form" class="white-popup mfp-hide">
+        <div class="panel panel-default">
+            <div class="panel-heading">Nouveau tag</div>
+            <div class="panel-body">
+                {!! Form::open(['url' => 'tag', 'class' => 'form-horizontal', 'id' => 'newTag']) !!}
+                    <input type="hidden" name="publisher_id" id="collection_publisher">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            {!! Form::label('name', 'Nom: ', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-3">
+                                {!! Form::submit('Créer', ['class' => 'btn btn-primary form-control']) !!}
+                            </div>    
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </div>
+            
+        </div>
+    </div>
+
     <div id="pop-distributor-form" class="white-popup mfp-hide">
         <div class="panel panel-default">
             <div class="panel-heading">Nouveau distributeur</div>
@@ -230,7 +263,7 @@
 
     <div id="pop-author-form" class="white-popup mfp-hide">
         <div class="panel panel-default">
-            <div class="panel-heading">Nouvel auteur</div>
+            <div class="panel-heading">Nouvel-le auteur-e</div>
             <div class="panel-body">
                 {!! Form::open(['url' => 'author', 'class' => 'form-horizontal', 'id' => 'newAuthor']) !!}
                     <div class="col-xs-12">
@@ -285,11 +318,12 @@
                     { data: 'isbn', name: 'isbn' }
                 ]
             });
-            $('#newBook').ajaxForm();
+            $('#newBook').ajaxForm({success: addBook, dataType: 'json', resetForm: true});
             $('#newPublisher').ajaxForm({success: addAndHidePublisherForm, dataType: 'json', resetForm: true});
             $('#newCollection').ajaxForm({success: addAndHideCollectionForm, dataType: 'json', resetForm: true});
             $('#newDistributor').ajaxForm({success: addAndHideDistributorForm, dataType: 'json', resetForm: true});
             $('#newAuthor').ajaxForm({success: addAndHideAuthorForm, dataType: 'json', resetForm: true});
+            $('#newTag').ajaxForm({success: addAndHideTagForm, dataType: 'json', resetForm: true});
         });
     </script>
 @endpush
