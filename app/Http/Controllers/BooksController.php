@@ -194,6 +194,7 @@ class BooksController extends Controller
             if(count($element = $crawler->filter('.listeliv_metabook > .genre')->first()) > 0)
             {
                 $names = str_replace("/", "", $element->text());
+                $names = str_replace(",", "", $element->text());
                 $names = str_replace("Bandes Dessinées", "BD", $names);
                 $names = preg_split('/\s+/', $names);
                 $tags = Tag::whereIn('name', $names)->get();
