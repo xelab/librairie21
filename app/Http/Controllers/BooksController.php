@@ -9,6 +9,7 @@ use App\Book;
 use App\Distributor;
 use App\Publisher;
 use App\Author;
+use App\Tag;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -121,6 +122,11 @@ class BooksController extends Controller
 		$crawler = $client->request('GET', 'http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS='. $request->input('isbn') .'&x=0&y=0');
 		$count = $crawler->filter('.listeliv_metabook')->count();
 		$book;
+		$authors = array();
+		$newAuthors = array();
+		$tags = array();
+		$newTags = array();
+		$newPublisher = null;
 		if($count > 0)
 		{
 			$book = new Book;
@@ -129,13 +135,35 @@ class BooksController extends Controller
 			}
 			if(count($element = $crawler->filter('.listeliv_metabook > .auteurs > a')->first()) > 0)
 			{
-				$authors = array_map('trim', explode(' ', $element->text()));
+				$names = array_map('trim', explode(',', $element->text()));
+				$authors = Author::whereIn('name', $names)->get();
+				if(count($authors) != count($names))
+				{
+					$namesInBdd = $authors->pluck('name')->all();
+					foreach ($names as $name) {
+						if(!in_array($name, $namesInBdd))
+						{
+							$author = Author::create(['name' => $name]);
+							$newAuthors[] = $author;
+						}
+					}
+				}
+
 			}
 			if(count($element = $crawler->filter('.listeliv_metabook > .editeur')->first()) > 0)
 			{
-				$editeurDate = explode('-', $element->text());
-				$nom = trim($editeurDate[0]);
-				$date = trim($editeurDate[1]);
+				if (count($crawler->filter('.listeliv_metabook > .editeur .date_parution')->first()) > 0) 
+				{
+					$date = $crawler->filter('.listeliv_metabook > .editeur .date_parution')->first()->text();
+					$english = array('Jan','Febr','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec');
+	        		$french = array('Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre');
+	        		$date = str_replace($french, $english, $date);
+	        		$date = new Carbon(trim(str_replace($french, $english, $date)));
+	        		$book->released = $date->format('d/m/Y');
+				}
+				
+				$editeur = explode('-', $element->text());
+				$nom = trim(html_entity_decode($editeur[0]));
 				$editeur = Publisher::where(['name' => $nom])->first();
 				if ($editeur != null)
 				{
@@ -143,7 +171,8 @@ class BooksController extends Controller
 				}
 				else
 				{
-					$book->publisher_id = Publisher::create(['name' => $nom])->id;
+					$newPublisher = Publisher::create(['name' => $nom]);
+					$book->publisher_id = $newPublisher->id;
 				}
 			}
 			if(count($element = $crawler->filter('.listeliv_metabook > .prix > .prix_indicatif')->first()) > 0)
@@ -157,9 +186,21 @@ class BooksController extends Controller
 			}
 			if(count($element = $crawler->filter('.listeliv_metabook > .genre')->first()) > 0)
 			{
-				$tags = explode($element->text(), ' ');
+				$names = explode($element->text(), ' ');
+				$tags = Tag::whereIn('name', $names)->get();
+				if(count($tags) != count($names))
+				{
+					$namesInBdd = $tags->pluck('name');
+					foreach ($namesInBdd as $name) {
+						if(!in_array($name, $names))
+						{
+							$tag = Tag::create(['name' => $name]);
+							$newTags[] = $tag;
+						}
+					}
+				}
 			}
 		}
-		return response()->json(['book' => $book]);
+		return response()->json(['book' => $book, 'tags' => $tags, 'newTags' => $newTags, 'authors' => $authors, 'newAuthors' => $newAuthors, 'newPublisher' => $newPublisher]);
 	}
 }
