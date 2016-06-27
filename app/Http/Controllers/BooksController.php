@@ -13,9 +13,10 @@ use App\Tag;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+use Validator;
 use Log;
 use Goutte\Client;
-use Datatables;
+use App\DataTables\BooksDataTable;
 
 class BooksController extends Controller
 {
@@ -25,23 +26,23 @@ class BooksController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(BooksDataTable $dataTable)
     {
         $distributors = ['' => 'Choisir un distributeur'] + Distributor::pluck('name', 'id')->all();
         $publishers = ['' => 'Choisir un éditeur'] + Publisher::pluck('name', 'id')->all();
         $authors = Author::pluck('name', 'id')->all();
         $tags = Tag::pluck('name', 'id')->all();
-        return view('books.index', compact('distributors', 'publishers', 'authors', 'tags'));
+        return $dataTable->render('books.index', compact('distributors', 'publishers', 'authors', 'tags'));
     }
 
     /**
-     * Process datatables ajax request.
+     * Process datatables ajax/actions requests.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function anyData()
+    public function anyData(BooksDataTable $dataTable)
     {
-        return Datatables::of(Book::select('*'))->make(true);
+        return $dataTable->render(null);
     }
 
     /**
@@ -61,9 +62,35 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['title' => 'required']);
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'title' => 'required',
+            'released' => 'date_format:"d/m/Y"'
+        ]);
 
-        $book = Book::create($request->all());
+        if($validator->fails()){
+            $this->throwValidationException(
+                $request, $validator
+            );
+        }
+
+        if(isset($data['released']) && !empty($data['released']))
+        {
+            $date = Carbon::createFromFormat('d/m/Y', $data['released']);
+            $data['released'] = $date->format('Y-m-d');
+        }
+
+        $book = Book::create($data);
+
+        if(isset($data['authors']) && !empty($data['authors']))
+        {
+            $book->authors()->attach($data['authors']);
+        }
+
+        if(isset($data['tags']) && !empty($data['tags']))
+        {
+            $book->tags()->attach($data['tags']);
+        }
 
         if($request->wantsJson())
         {
@@ -126,10 +153,9 @@ class BooksController extends Controller
     public function scraping(Request $request)
     {
         $client = new Client();
-        Log::info('test', ['request' => $request->input('isbn')]);
         $crawler = $client->request('GET', 'http://www.librairie-de-paris.fr/listeliv.php?RECHERCHE=simple&LIVREANCIEN=2&MOTS='. $request->input('isbn') .'&x=0&y=0');
         $count = $crawler->filter('.listeliv_metabook')->count();
-        $book;
+        $book = null;
         $authors = array();
         $newAuthors = array();
         $tags = array();
@@ -209,6 +235,10 @@ class BooksController extends Controller
                         }
                     }
                 }
+            }
+            if (count($element = $crawler->filter('.visu > a > img')->first()) > 0)
+            {
+                $book->url_picture = $element->attr('src');
             }
         }
         return response()->json(['book' => $book, 'tags' => $tags, 'newTags' => $newTags, 'authors' => $authors, 'newAuthors' => $newAuthors, 'newPublisher' => $newPublisher]);

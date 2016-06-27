@@ -1,8 +1,5 @@
-.new-distributor,
-.new-publisher,
-.new-author,
-.new-collection{
-    cursor:pointer;
+body{
+    padding-top: 70px;
 }
 
 .white-popup {

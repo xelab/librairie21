@@ -9,6 +9,8 @@ $(document).ready(function() {
         type: 'inline',
         preloader: false
     });
+
+    $('#newBook').hide();
 });
 
 $('#isbn').on('input', function(){
@@ -33,6 +35,12 @@ $('#isbn').on('input', function(){
                 $('#price').val(book.price);
                 $('#released').val(book.released);
                 $('#title').val(book.title);
+                if(book.url_picture != undefined && book.url_picture != null)
+                {
+                    $('#url_picture').val(book.url_picture);
+                    $('#url_picture').trigger('change');
+                }
+                
 
                 if(newPublisher != null && newPublisher != undefined)
                 {
@@ -130,6 +138,9 @@ function addAndHideTagForm(data)
 
 function addBook(data)
 {
+    $('input').parent().removeClass('has-error');
+    $('#picture').attr('src', '#');
+    $('.alert-success').removeClass('hidden');
     $('#books-table').DataTable().draw();
     $('#publisher_id').trigger('change');
     $('#authors').trigger('change');
@@ -169,3 +180,17 @@ $('#publisher_id').on('change', function(){
     }
     
 });
+
+
+$('#url_picture').on('change', function(){
+    $('#picture').attr('src', $('#url_picture').val());
+});
+
+function showErrors(data)
+{
+    $.each(data.responseJSON, function (key, value) {
+        var input = '#newBook input[name=' + key + ']';
+        $(input + '+small').text(value);
+        $(input).parent().addClass('has-error');
+    });
+}

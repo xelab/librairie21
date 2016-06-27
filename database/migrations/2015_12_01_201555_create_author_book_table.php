@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateAuthorsBooksTable extends Migration {
+class CreateAuthorBookTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,12 @@ class CreateAuthorsBooksTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('authors_books', function(Blueprint $table)
+		Schema::create('author_book', function(Blueprint $table)
 		{
 			$table->integer('author_id')->unsigned();
 			$table->integer('book_id')->unsigned();
-			$table->index(['author_id','book_id'], 'index_authors_books_on_author_id_and_book_id');
-			$table->index(['book_id','author_id'], 'index_authors_books_on_book_id_and_author_id');
+			$table->index(['author_id','book_id'], 'index_author_book_on_author_id_and_book_id');
+			$table->index(['book_id','author_id'], 'index_author_book_on_book_id_and_author_id');
 		});
 	}
 
@@ -29,7 +29,7 @@ class CreateAuthorsBooksTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('authors_books');
+		Schema::drop('author_book');
 	}
 
 }

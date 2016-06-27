@@ -19,7 +19,7 @@ class Book extends Model
      *
      * @var array
      */
-    protected $fillable = ['isbn','collection_id','publisher_id','price','released','title','summary','deposit','buy','distributor_id'];
+    protected $fillable = ['isbn','collection_id','publisher_id','price','released','title','summary','deposit','buy','distributor_id', 'url_picture'];
 
     /**
      * Publisher

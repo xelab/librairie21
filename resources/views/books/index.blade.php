@@ -1,15 +1,30 @@
 @extends('layouts.master')
 
 @section('content')
-    <hr>
+    <button onclick="$('#newBook').show();$(this).hide();$('#hideForm').show();" id="showNewForm" class="btn btn-primary">Ajouter une entrée</button>
+    <button onclick="$('#newBook').hide();$('#showNewForm').show();$(this).hide();" class="btn btn-warning" id="hideForm" style="display: none">Masquer le formulaire</button>
+    
+    <div class="alert alert-success alert-dismissible hidden" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Ouvrage correctement ajouté.</strong>
+    </div> 
+
     <input type="hidden" id="url-scraping" value="{{ route('books.scraping') }}">
     <input type="hidden" id="url-collections" value="{{ route('publisher.collections') }}">
     {!! Form::open(['url' => 'book', 'class' => 'form-horizontal', 'id' => 'newBook']) !!}
+        <hr>
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('isbn', 'ISBN: ', ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
                     {!! Form::number('isbn', null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('title', 'Titre: ', ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-9">
+                    {!! Form::text('title', null, ['class' => 'form-control']) !!}
+                    <small class="help-block"></small>
                 </div>
             </div>
             <div class="form-group">
@@ -49,6 +64,7 @@
                 {!! Form::label('released', 'Publié le: ', ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
                     {!! Form::date('released', null, ['class' => 'form-control']) !!}
+                    <small class="help-block"></small>
                 </div>
             </div>
             <div class="form-group">
@@ -72,20 +88,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('title', 'Titre: ', ['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-9">
-                    {!! Form::text('title', null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('summary', 'Résumé: ', ['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-9">
-                    {!! Form::textarea('summary', null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
             <div class="form-group">
                 {!! Form::label('tags', 'Tags: ', ['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-9">
@@ -95,10 +97,26 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('url_picture', 'URL image: ', ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-9">
+                    {!! Form::text('url_picture', null, ['class' => 'form-control']) !!}
+                    <img id="picture" src="#" alt="">
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('summary', 'Résumé: ', ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-9">
+                    {!! Form::textarea('summary', null, ['class' => 'form-control', 'rows' => 5]) !!}
+                </div>
+            </div>
+            
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-3">
                     {!! Form::submit('Créer', ['class' => 'btn btn-primary form-control']) !!}
+                    
                 </div>    
             </div>
         </div>
@@ -291,34 +309,24 @@
         </div>
     </div>
 
-    <div class="table">
-        <table class="table table-striped" id="books-table">
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>ISBN</th>
-                </tr>
-            </thead>
-        </table>
+    <div class="row">
+        <div class="col-xs-12">
+            <hr>
+            {!! $dataTable->table(['id' => 'books-table', 'class' => 'table table-striped']) !!}
+        </div>
     </div>
+    
 
 @endsection
 
 @push('scripts')
     <script src="{{ asset('js/jquery.form.min.js') }}"></script>
     <script src="{{ asset('js/books.js') }}"></script>
+    {!! $dataTable->scripts() !!}
     <script>
         $(function() {
-            $('#books-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{!! route('datatables.data') !!}",
-                columns: [
-                    { data: 'title', name: 'title' },
-                    { data: 'isbn', name: 'isbn' }
-                ]
-            });
-            $('#newBook').ajaxForm({success: addBook, dataType: 'json', resetForm: true});
+            
+            $('#newBook').ajaxForm({success: addBook, error: showErrors, dataType: 'json', resetForm: true});
             $('#newPublisher').ajaxForm({success: addAndHidePublisherForm, dataType: 'json', resetForm: true});
             $('#newCollection').ajaxForm({success: addAndHideCollectionForm, dataType: 'json', resetForm: true});
             $('#newDistributor').ajaxForm({success: addAndHideDistributorForm, dataType: 'json', resetForm: true});

@@ -23,6 +23,7 @@ class CreateBooksTable extends Migration {
 			$table->string('title');
 			$table->text('summary', 65535)->nullable();
 			$table->timestamps();
+			$table->string('url_picture')->nullable();
 			$table->integer('deposit')->nullable();
 			$table->integer('buy')->nullable();
 			$table->integer('distributor_id')->unsigned()->nullable()->index('index_books_on_distributor_id');
