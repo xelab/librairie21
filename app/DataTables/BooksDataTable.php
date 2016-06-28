@@ -19,8 +19,11 @@ class BooksDataTable extends DataTable
         return $this->datatables
             ->eloquent($this->query())
             ->addColumn('action', function ($book) {
-                return '<a href="#edit-'.$book->id.'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
+                return '<a href="#edit-'.$book->id.'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Modifier</a>';
             })
+            ->editColumn('distributor.name', '{{ $distributor->name or "" }}')
+            ->editColumn('publisher.name', '{{ $publisher->name or "" }}')
+            ->editColumn('authors.name', '{{ $authors->implode("name", ", ") }}')
             ->make(true);
     }
 
@@ -31,7 +34,7 @@ class BooksDataTable extends DataTable
      */
     public function query()
     {
-        $books = Book::select();
+        $books = Book::with('publisher', 'distributor', 'authors');
 
         return $this->applyScopes($books);
     }
@@ -83,10 +86,13 @@ class BooksDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'id',
             ['data' => 'title', 'name' => 'title', 'title' => 'Titre'],
-            'created_at',
-            'updated_at',
+            ['data' => 'isbn', 'name' => 'isbn', 'title' => 'ISBN'],
+            ['data' => 'buy', 'name' => 'buy', 'title' => 'Stock'],
+            ['data' => 'deposit', 'name' => 'deposit', 'title' => 'Dépôts'],
+            ['data' => 'publisher.name', 'name' => 'publisher', 'title' => 'Éditeur'],
+            ['data' => 'distributor.name', 'name' => 'distributor', 'title' => 'Distributeur'],
+            ['data' => 'authors.name', 'name' => 'authors', 'title' => 'Auteur-es'],
         ];
     }
 
